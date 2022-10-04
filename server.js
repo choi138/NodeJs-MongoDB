@@ -50,7 +50,7 @@ app.post('/add', (req, res) => { // POST요청 처리를 하려면 app.post를 �
     res.send('전송완료');
     console.log(req.body.title) // req.body로 POST요청의 body를 받아올 수 있다.
     console.log(req.body.date);
-    db.collection('post').insertOne({ 제목: req.body.title, 날짜: req.body.date }, (error, asdf) => {
+    db.collection('post').insertOne({ 제목: req.body.title, 날짜: req.body.date }, (error, result) => {
         // post라는 파일에 InsertOne{자료}로 저장
         console.log('포스트에 저장완료'); //post라는 파일에 InsertOne{자료}로 저장
     });
@@ -59,4 +59,12 @@ app.post('/add', (req, res) => { // POST요청 처리를 하려면 app.post를 �
 // /list라는 경로로 get방식으로 접속하면
 // 실제 DB에 저장된 데이터들로 예쁘게 꾸며진 HTMl을 보여줌
 
-// app.get('/list', (req, res) => {
+app.get('/list', (req, res) => {
+    db.collection('post').find().toArray((error, result) => { // post라는 collectoin안의 모든 데이터를 가져옴
+        console.log(result); // 가져온 데이터를 콘솔에 출력
+        console.log(error)
+        res.render('list.ejs', { posts: result }); // res.render('list.ejs')는 list.ejs파일을 렌더링. ejs파일은 views폴더에 있어야함
+    });
+    // DB에서 데이터를 가져와서 list.ejs파일에 집어넣기.
+
+});
