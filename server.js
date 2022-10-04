@@ -2,9 +2,11 @@ const express = require('express'); // 라이브러리 임포트
 const app = express(); // express 객체 생성
 const bodyParser = require('body-parser');
 app.use(express.urlencoded({ extended: true })) // body-parser 사용
+const MongoClient = require('mongodb').MongoClient; // 몽고디비 사용
+app.set('view engine', 'ejs'); // ejs 사용
 
 let db; // 데이터베이스 객체를 저장할 변수 선언
-const MongoClient = require('mongodb').MongoClient; // 몽고디비 사용
+
 MongoClient.connect('mongodb+srv://kidjustinchoi:kidjustin0524@cluster0.s2yc1kc.mongodb.net/todoapp?retryWrites=true&w=majority', (error, client) => {
     if (error) return console.log(error);
     db = client.db('todoapp'); // todoapp이라는 db로 연결
@@ -45,10 +47,16 @@ app.get('/write', (req, res) => { // request(요청), response(응답);
 // {제목: '어쩌구', 날짜: '저쩌구}
 
 app.post('/add', (req, res) => { // POST요청 처리를 하려면 app.post를 사용
-    res.send('add');
-    // console.log(req.body.title) // req.body로 POST요청의 body를 받아올 수 있다.
-    // console.log(req.body.date);
+    res.send('전송완료');
+    console.log(req.body.title) // req.body로 POST요청의 body를 받아올 수 있다.
+    console.log(req.body.date);
     db.collection('post').insertOne({ 제목: req.body.title, 날짜: req.body.date }, (error, asdf) => {
+        // post라는 파일에 InsertOne{자료}로 저장
         console.log('포스트에 저장완료'); //post라는 파일에 InsertOne{자료}로 저장
     });
 });
+
+// /list라는 경로로 get방식으로 접속하면
+// 실제 DB에 저장된 데이터들로 예쁘게 꾸며진 HTMl을 보여줌
+
+// app.get('/list', (req, res) => {
