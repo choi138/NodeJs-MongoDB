@@ -48,12 +48,18 @@ app.get('/write', (req, res) => { // request(요청), response(응답);
 
 app.post('/add', (req, res) => { // POST요청 처리를 하려면 app.post를 사용
     res.send('전송완료');
-    console.log(req.body.title) // req.body로 POST요청의 body를 받아올 수 있다.
-    console.log(req.body.date);
-    db.collection('post').insertOne({ 제목: req.body.title, 날짜: req.body.date }, (error, result) => {
-        // post라는 파일에 InsertOne{자료}로 저장
-        console.log('포스트에 저장완료'); //post라는 파일에 InsertOne{자료}로 저장
+    db.collection('counter').findOne({ name: '게시물갯수' }, (error, result) => {
+        console.log(result.totalPost);
+        let totalPost = result.totalPost;
+        // console.log(req.body.title) // req.body로 POST요청의 body를 받아올 수 있다.
+        // console.log(req.body.date);
+        db.collection('post').insertOne({ _id: totalPost + 1, 제목: req.body.title, 날짜: req.body.date }, (error, result) => {
+            // post라는 파일에 InsertOne{자료}로 저장
+            console.log('포스트에 저장완료'); //post라는 파일에 InsertOne{자료}로 저장
+        });
+        // counter라는 콜렉션에 있는 totalPost라는 값을 1증가시켜야함. 게시물 하나 등록할때마다 카운터도 1 증가시켜야함
     });
+
 });
 
 // /list라는 경로로 get방식으로 접속하면
