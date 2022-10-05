@@ -88,5 +88,7 @@ app.delete('/delete', (req, res) => {
     // req.body에 담겨온 게시물번호를 가진 글을 DB에서 찾아서 삭제
     db.collection('post').deleteOne(req.body, (error, result) => { // 멘 앞에는 어떤 항목을 삭제할지 정한다.
         console.log('삭제완료');
+        res.status(200).send({ message: '성공했습니다' }); // 성공했다는 메세지를 보냄   
+        // res.status(400).send({ message: '실패했습니다' }); // 실패했다는 메세지를 보냄
     })
 })
