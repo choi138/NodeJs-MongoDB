@@ -11,9 +11,9 @@ MongoClient.connect('mongodb+srv://kidjustinchoi:kidjustin0524@cluster0.s2yc1kc.
     if (error) return console.log(error);
     db = client.db('todoapp'); // todoapp이라는 db로 연결
 
-    db.collection('post').insertOne({ name: 'justin', _id: 100 }, (error, asdf) => {
-        console.log('저장완료'); //post라는 파일에 InsertOne{자료}로 저장
-    });
+    // db.collection('post').insertOne({ name: 'justin', _id: 100 }, (error, asdf) => {
+    //     console.log('저장완료'); //post라는 파일에 InsertOne{자료}로 저장
+    // });
 
     app.listen(8080, () => { // 3000번 포트로 서버 실행
         console.log('Server is running on port 8080');
@@ -46,18 +46,25 @@ app.get('/write', (req, res) => { // request(요청), response(응답);
 // collection은 하나의 파일명 같은거임 ㅇㅇ. 그래서 post라는 파일에 데이터를 저장하겠다는 뜻
 // {제목: '어쩌구', 날짜: '저쩌구}
 
-app.post('/add', (req, res) => { // POST요청 처리를 하려면 app.post를 사용
+app.post('/add', (req, res) => { // 누가 폼에서 /add로 POST요청 하면
     res.send('전송완료');
+    // counter라는 콜렉션에 있는 totalPost라는 값을 1증가시켜야함. 게시물 하나 등록할때마다 카운터도 1 증가시켜야함
     db.collection('counter').findOne({ name: '게시물갯수' }, (error, result) => {
-        console.log(result.totalPost);
-        let totalPost = result.totalPost;
+        console.log(result.totalPost); // DB.counter 내의 총게시물갯수(totalPost)를 찾음
+        let 총게시물갯수 = result.totalPost; // 총게시물갯수를 변수에 저장
         // console.log(req.body.title) // req.body로 POST요청의 body를 받아올 수 있다.
-        // console.log(req.body.date);
-        db.collection('post').insertOne({ _id: totalPost + 1, 제목: req.body.title, 날짜: req.body.date }, (error, result) => {
-            // post라는 파일에 InsertOne{자료}로 저장
-            console.log('포스트에 저장완료'); //post라는 파일에 InsertOne{자료}로 저장
+        db.collection('post').insertOne({ _id: 총게시물갯수 + 1, 제목: req.body.title, 날짜: req.body.date }, (error, result) => { // DB.post에 새게시물 기록
+            console.log('포스트에 저장완료');
+            // counter라는 콜렉션에 있는 totalPost라는 항목도 1 증가시켜야함.
+            db.collection('counter').updateOne({ name: '게시물갯수' }, { $inc: { totalPost: 1 } },
+                // db데이터 하나를 수정할때 updateOne함수를 씀.  여러개는 updateMany
+                // updateOne(요런데이터를, 이렇게 수정해주셈) 어떤 데이터를 수정할지 정하는게 맨 앞에 있는 {}임. 수정값을 정하는게 중간에 있는 {}임. 
+                // { $set: { totalPost: 바꿀값} } 쉽게 말해 set은 변경. 
+                // { $inc: { totalPost: 기존값에 더해줄 값 } } inc는 기존값에 더해주는것임.
+                (error, result) => {
+                    if (error) return console.log(error);
+                })
         });
-        // counter라는 콜렉션에 있는 totalPost라는 값을 1증가시켜야함. 게시물 하나 등록할때마다 카운터도 1 증가시켜야함
     });
 
 });
