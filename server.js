@@ -81,3 +81,12 @@ app.get('/list', (req, res) => {
     // DB에서 데이터를 가져와서 list.ejs파일에 집어넣기.
 
 });
+
+app.delete('/delete', (req, res) => {
+    console.log(req.body) // 요청시 함께 보내 데이터를 받아옴.  
+    req.body._id = parseInt(req.body._id)
+    // req.body에 담겨온 게시물번호를 가진 글을 DB에서 찾아서 삭제
+    db.collection('post').deleteOne(req.body, (error, result) => { // 멘 앞에는 어떤 항목을 삭제할지 정한다.
+        console.log('삭제완료');
+    })
+})
