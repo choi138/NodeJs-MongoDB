@@ -92,3 +92,12 @@ app.delete('/delete', (req, res) => {
         // res.status(400).send({ message: '실패했습니다' }); // 실패했다는 메세지를 보냄
     })
 })
+
+//  /detail로 접속하면 detail.ejs 보여줌
+
+app.get('/detail/:id', (req, res) => {
+    db.collection('post').findone({ _id: parseInt(req.params.id) }, (error, result) => {
+        console.log(result)
+        res.render('detail.ejs', { data: result });
+    })
+})
