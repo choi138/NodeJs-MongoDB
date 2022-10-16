@@ -77,7 +77,7 @@ app.post('/add', (req, res) => { // 누가 폼에서 /add로 POST요청 하면
 
 app.get('/list', (req, res) => {
     db.collection('post').find().toArray((error, result) => { // post라는 collectoin안의 모든 데이터를 가져옴
-        console.log(result); // 가져온 데이터를 콘솔에 출력
+        // console.log(result); // 가져온 데이터를 콘솔에 출력
         console.log(error)
         res.render('list.ejs', { posts: result }); // res.render('list.ejs')는 list.ejs파일을 렌더링. ejs파일은 views폴더에 있어야함
     });
@@ -122,3 +122,13 @@ app.get('/edit/:id', (req, res) => {
         if (error) return res.send('에러가 발생했습니다');
     })
 })
+
+app.put('/edit', (req, res) => {
+    // 폼에 담긴 제목 데이터, 날짜 데이터를 가지고 db.collection에 업데이트 함
+    db.collection('post').updateOne({ _id: parseInt(req.body.id) }, { $set: { 제목: req.body.title, 날짜: req.body.date } }, (error, result) => {
+        // updateOne(어떤게시물수정할건지, 수정값, 콜백함수) $set 업데이트 해주세요(없으면 추가해주시고요)라는 뜻
+        console.log('수정완료');
+        if (error) return res.send('에러가 발생했습니다');
+        res.redirect('/list');
+    })
+});

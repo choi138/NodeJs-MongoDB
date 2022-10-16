@@ -85,20 +85,19 @@
     <%- include('nav.html') %>
 
         <div class="Wrap">
-            <form class="WriteWrap" action="/add?_method=PUT" method="POST">
-                <!-- POST는 수정이다. /add는 경로이다. -->
+            <form class="WriteWrap" action="/edit?_method=PUT" method="POST">
                 <div>
                     <h1>기록해도 안할 거 알지만</h1>
                     <div class="todo">
                         <h4>오늘의 할일</h4>
+                        <input type="text" value="<%= post._id %>" name="id" style="display: none;"/>
                         <input value="<%= post.제목 %>" class="asdf" name="title" />
                     </div>
                     <div class="todo">
                         <h4>Due Date</h4>
                         <input value="<%= post.날짜 %>" class="asdf" name="date" />
                     </div>
-                    <button class="button"><a style="text-decoration: none; color: white;"
-                            href="/list">Submit</a></button>
+                    <button class="button">Submit</button>
                 </div>
             </form>
         </div>
