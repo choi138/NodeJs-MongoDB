@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 app.use(express.urlencoded({ extended: true })) // body-parser 사용
 const MongoClient = require('mongodb').MongoClient; // 몽고디비 사용
 app.set('view engine', 'ejs'); // ejs 사용
+app.use(express.static('public')); // public 폴더 사용
 
 let db; // 데이터베이스 객체를 저장할 변수 선언
 
@@ -33,11 +34,11 @@ app.get('/beauty', (req, res) => { // request(요청), response(응답);
 });
 
 app.get('/', (req, res) => { // request(요청), response(응답);
-    res.sendFile(__dirname + '/index.html');
+    res.render('index.ejs');
 });
 
 app.get('/write', (req, res) => { // request(요청), response(응답);
-    res.sendFile(__dirname + '/write.html');
+    res.render('write.ejs');
 });
 
 // /add라는 경로로 post방식으로 요청이 들어오면
@@ -94,10 +95,13 @@ app.delete('/delete', (req, res) => {
 })
 
 //  /detail로 접속하면 detail.ejs 보여줌
+// /detail2로 접속하면 detail2.ejs 보여줌
+// /detail3로 접속하면 detail3.ejs 보여줌
 
 app.get('/detail/:id', (req, res) => {
-    db.collection('post').findone({ _id: parseInt(req.params.id) }, (error, result) => {
+    db.collection('post').findOne({ _id: parseInt(req.params.id) }, (error, result) => {
         console.log(result)
-        res.render('detail.ejs', { data: result });
+        res.render('detail.ejs', { data: result }); // { 이런이름으로: 이런데이터를 } 이란 뜻임.
+        if (error) return console.log(error);
     })
 })
