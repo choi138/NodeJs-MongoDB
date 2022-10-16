@@ -3,6 +3,8 @@ const app = express(); // express 객체 생성
 const bodyParser = require('body-parser');
 app.use(express.urlencoded({ extended: true })) // body-parser 사용
 const MongoClient = require('mongodb').MongoClient; // 몽고디비 사용
+const methodOverride = require('method-override'); // method-override 사용
+app.use(methodOverride('_method')); // method-override 사용
 app.set('view engine', 'ejs'); // ejs 사용
 app.use(express.static('public')); // public 폴더 사용
 
@@ -102,6 +104,21 @@ app.get('/detail/:id', (req, res) => {
     db.collection('post').findOne({ _id: parseInt(req.params.id) }, (error, result) => {
         console.log(result)
         res.render('detail.ejs', { data: result }); // { 이런이름으로: 이런데이터를 } 이란 뜻임.
-        if (error) return console.log(error);
+        if (error) return res.send('에러가 발생했습니다');
+    })
+})
+
+// 게시글마다 각각 다른 edit.ejs 내용이 필요함 
+
+// GET요청은 데이터를 가져오는 요청
+// POST요청은 데이터를 생성하는 요청
+// PUT요청은 데이터를 수정하는 요청
+// DELETE요청은 데이터를 삭제하는 요청
+
+app.get('/edit/:id', (req, res) => {
+    db.collection('post').findOne({ _id: parseInt(req.params.id) }, (error, result) => {
+        console.log(result)
+        res.render('edit.ejs', { post: result }); // { 이런이름으로: 이런데이터를 } 이란 뜻임.
+        if (error) return res.send('에러가 발생했습니다');
     })
 })

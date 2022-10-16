@@ -27,6 +27,7 @@
                     <p>할일 마감날짜 : <%= posts[i].날짜 %>
                     </p>
                     <button class="btn btn-danger delete" data-id="<%= posts[i]._id %>">삭제</button>
+                    <button class="btn btn-danger delete" data-id="<%= posts[i]._id %>"><a style="text-decoration: none; color: white;" href="edit/ <%= posts[i]._id %>">수정</a></button> 
                 </li>
                 <% } %>
         </ul>
@@ -46,7 +47,7 @@
                 data: { _id: writeCount } // 요청과 함께 보낼데이터 (지금 내가 클릭한 버튼의 id를 여기에 집어넣기)
             }).done((result) => { // Ajax성공시 실행할 코드는 여기
                 // 페이지를 강제로 새로고침 or 삭제버튼을 누른 요소를 제거/안보이게
-                nowClick.parent('li').fadeOut();
+                nowClick.parentElement.style.display = 'none';
                 console.log('성공헸지롱');
                 // parent('li') ~의 부모중 li태그를 찾아주셈.
                 // fadeOut() 서서히 사라지게 해주셈. 
