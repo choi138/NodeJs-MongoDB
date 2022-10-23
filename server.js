@@ -50,7 +50,6 @@ app.get('/write', (req, res) => { // request(요청), response(응답);
 // {제목: '어쩌구', 날짜: '저쩌구}
 
 app.post('/add', (req, res) => { // 누가 폼에서 /add로 POST요청 하면
-    res.send('전송완료');
     // counter라는 콜렉션에 있는 totalPost라는 값을 1증가시켜야함. 게시물 하나 등록할때마다 카운터도 1 증가시켜야함
     db.collection('counter').findOne({ name: '게시물갯수' }, (error, result) => {
         console.log(result.totalPost); // DB.counter 내의 총게시물갯수(totalPost)를 찾음
@@ -66,6 +65,9 @@ app.post('/add', (req, res) => { // 누가 폼에서 /add로 POST요청 하면
                 // { $inc: { totalPost: 기존값에 더해줄 값 } } inc는 기존값에 더해주는것임.
                 (error, result) => {
                     if (error) return console.log(error);
+                    else {
+                        res.redirect('/list');
+                    }
                 })
         });
     });
@@ -132,3 +134,71 @@ app.put('/edit', (req, res) => {
         res.redirect('/list');
     })
 });
+
+
+
+
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
+
+app.use(session({ // 미들웨어 요청과 응답 중간에 실행되는 함수(app.use)
+    secret: '비밀코드', // session을 만들때 비밀번호
+    resave: true,
+    saveUninitialized: false,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+
+// 로그인 페이지 제작 & 라우팅
+app.get('/login', (req, res) => {
+    res.render('login.ejs');
+});
+
+//로그인을 하면.. 아이디 비번 검사 
+// passport: 로그인 기능 쉽게 구현 도와줌 authenticate는 인증해주세요 함수
+app.post('/login', passport.authenticate('local', {
+    // local 방식으로 회원인지 인증해주셈 
+    failureRedirect: '/fail' // 로그인 실패시 /fail로 이동
+}), (req, res) => {
+    res.redirect('/'); // 로그인 성공시 /로 이동
+})
+
+// 아이디 비번 인증하는 세부코드 작성
+passport.use(new LocalStrategy({
+    usernameField: 'id', // 유저가 입력한 아이디/비번 항목이 뭔지 정의(form의 name값)
+    passwordField: 'pw',
+    session: true, // 세션에 저장 여부
+    passReqToCallback: false,
+}, (inputId, inputPw, done) => {
+    // 아이디와 비번 검증 부분
+    //console.log(입력한아이디, 입력한비번);
+    db.collection('login').findOne({ id: inputId }, (err, result) => {
+        if (err) return done(err) // done()은 3개의 파라미터를 가질 수 있음. 맨 처음엔 서버에러, 두번째에는 성공시사용자db데이터, 세번째에는 에러 메세지
+
+        if (!result) return done(null, false, { message: '존재하지않는 아이디요' }) // result가 아이디가 없을때 이걸 실행함
+        if (inputPw == result.pw) { // result가 있으면 이걸 실행
+            return done(null, result)
+        } else {
+            return done(null, false, { message: '비번틀렸어요' })
+        }
+    })
+}));
+
+// 아이디/비번 맞으면 세션을 하나 만들어줘야됨
+// 로그인 성공-> 세션정보를 만듦-> 마이페이지 방문시 세션검사
+// id를 이용해서 세션을 저장시키는 코드(로그인 성공시 발동)
+passport.serializeUser(function (user, done) { //serializeUser는 유저의 정보를 serialize함 암호를 만들어서 세션에 저장시킴
+    // user: 로그인 성공시 done()의 두번째 인자값
+    done(null, user.id)
+});
+
+// 이 세션 데이터를 가진 사람을 db에서 찾기(마이페이지 접속시 발동)
+passport.deserializeUser(function (id, done) {
+    done(null, {})
+});
+
+
+
